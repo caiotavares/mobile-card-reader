@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
@@ -50,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const platform = const MethodChannel('app.nfc.data');
   int _counter = 0;
 
   void _incrementCounter() {
@@ -113,5 +115,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getNfcData();
+  }
+
+  getNfcData() async {
+    var data = await platform.invokeMethod("getNfcData");
+    debugPrint('data: $data');
   }
 }
