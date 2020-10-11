@@ -41,6 +41,7 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        initNFC()
 
         // Migrate this to the plugin
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
@@ -77,6 +78,8 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun readNFC(intent: Intent) {
+        Toast.makeText(this, "Action: ${intent.action}", Toast.LENGTH_LONG).show()
+
         if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             Toast.makeText(this, "NFC READ!", Toast.LENGTH_LONG).show()
             tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)

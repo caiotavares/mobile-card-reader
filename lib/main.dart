@@ -123,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getNfcData();
   }
 
+  // This should be called the moment we read the NFC data
   getNfcData() async {
     var data = await platform.invokeMethod("getNfcData");
     debugPrint('data: $data');
