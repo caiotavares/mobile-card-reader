@@ -1,1 +1,0 @@
-{"info":"This is a generated file; do not edit or check into version control.","plugins":{"ios":[],"android":[{"name":"emv","path":"/Users/caio.tavares/dev/personal/mobile-card-reader/lib/emv/","dependencies":[]}],"macos":[],"linux":[],"windows":[],"web":[]},"dependencyGraph":[{"name":"emv","dependencies":[]}],"date_created":"2020-10-10 16:11:53.833039","version":"1.20.2"}
