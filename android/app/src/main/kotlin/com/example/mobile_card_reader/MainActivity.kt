@@ -4,10 +4,12 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.nfc.tech.IsoDep
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Toast
+import com.google.common.io.BaseEncoding
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -18,6 +20,11 @@ class MainActivity : FlutterActivity() {
     private var pendingIntent: PendingIntent? = null
     private var tag: Tag? = null
     private val CHANNEL = "app.nfc.data"
+
+    private val select = "00A4040007A0000000041010"
+    private val resetPinTryCounter = "84240000086C8D6940531DC578"
+    private val getProcessingOptions = "80A80000028300"
+    private val generateAc = "80AE8000420000000013370000000013370986000000000009861504280030901B6A2300001EABC126F85499760000000000000000000000000000000000000000000000000000"
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
@@ -78,14 +85,26 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun readNFC(intent: Intent) {
-        Toast.makeText(this, "Action: ${intent.action}", Toast.LENGTH_LONG).show()
-
         if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             Toast.makeText(this, "NFC READ!", Toast.LENGTH_LONG).show()
-            tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
-            if (tag != null) {
-                Log.d("TAG DISCOVERED", tag.toString())
-            }
+            val tag: Tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+            interact(tag)
         }
+    }
+
+    private fun interact(tag: Tag) {
+        val isoTag = IsoDep.get(tag)
+        isoTag.connect()
+        sendApdu(isoTag, select)
+        sendApdu(isoTag, getProcessingOptions)
+        sendApdu(isoTag, generateAc)
+        sendApdu(isoTag, resetPinTryCounter)
+        isoTag.close()
+    }
+
+    private fun sendApdu(tag: IsoDep, apdu: String) {
+        Log.d("C-APDU -> ", apdu)
+        val response = tag.transceive(BaseEncoding.base16().decode(apdu))
+        Log.d("-> R-APDU ", BaseEncoding.base16().encode(response))
     }
 }
